@@ -4,15 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using EFUniversity.Data;
 
 #nullable disable
 
 namespace EFUniversity.Migrations
 {
     [DbContext(typeof(UniversityContext))]
-    [Migration("20221011065226_UpdateErreur")]
-    partial class UpdateErreur
+    [Migration("20221009184743_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

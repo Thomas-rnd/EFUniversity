@@ -1,62 +1,7 @@
-using EFUniversity.Data;
-
-namespace EFUniversity.Models;
 public class SeedData
 {
     public static void Init()
     {
-        // Add students
-        Student carson = new Student
-        {
-            FirstName = "Alexander",
-            LastName = "Carson",
-            EnrollmentDate = DateTime.Parse("2016-09-01"),
-        };
-        Student alonso = new Student
-        {
-            FirstName = "Meredith",
-            LastName = "Alonso",
-            EnrollmentDate = DateTime.Parse("2018-09-01"),
-        };
-        Student anand = new Student
-        {
-            FirstName = "Arturo",
-            LastName = "Anand",
-            EnrollmentDate = DateTime.Parse("2019-09-01"),
-        };
-        Student barzdukas = new Student
-        {
-            FirstName = "Gytis",
-            LastName = "Barzdukas",
-            EnrollmentDate = DateTime.Parse("2018-09-01"),
-        };
-
-        // Add courses
-        Course chemistry = new Course
-        {
-            Id = 1050,
-            Title = "Chemistry",
-            Credits = 3
-        };
-        Course microeconomics = new Course
-        {
-            Id = 4022,
-            Title = "Microeconomics",
-            Credits = 3
-        };
-        Course macroeconmics = new Course
-        {
-            Id = 4041,
-            Title = "Macroeconomics",
-            Credits = 3
-        };
-        Course calculus = new Course
-        {
-            Id = 1045,
-            Title = "Calculus",
-            Credits = 4
-        };
-
         using (var context = new UniversityContext())
         {
             // Look for existing content
@@ -64,77 +9,110 @@ public class SeedData
             {
                 return;   // DB already filled
             }
-            else
-            {
-                context.Students.AddRange(
-                    carson,
-                    alonso,
-                    anand,
-                    barzdukas
-                );
-            }
 
-            // Look for existing content
-            if (context.Students.Any())
+            // Add students
+            Student carson = new Student
             {
-                return;   // DB already filled
-            }
-            else
+                FirstName = "Alexander",
+                LastName = "Carson",
+                EnrollmentDate = DateTime.Parse("2016-09-01"),
+            };
+            Student alonso = new Student
             {
-                context.Courses.AddRange(
-                    chemistry,
-                    microeconomics,
-                    macroeconmics,
-                    calculus
-                );
-            }
+                FirstName = "Meredith",
+                LastName = "Alonso",
+                EnrollmentDate = DateTime.Parse("2018-09-01"),
+            };
+            Student anand = new Student
+            {
+                FirstName = "Arturo",
+                LastName = "Anand",
+                EnrollmentDate = DateTime.Parse("2019-09-01"),
+            };
+            Student barzdukas = new Student
+            {
+                FirstName = "Gytis",
+                LastName = "Barzdukas",
+                EnrollmentDate = DateTime.Parse("2018-09-01"),
+            };
+            context.Students.AddRange(
+                carson,
+                alonso,
+                anand,
+                barzdukas
+            );
 
-            // Look for existing content
-            if (context.Enrollments.Any())
+            // Add courses
+            Course chemistry = new Course
             {
-                return;   // DB already filled
-            }
-            else
+                Id = 1050,
+                Title = "Chemistry",
+                Credits = 3
+            };
+            Course microeconomics = new Course
             {
-                // Add enrollments
-                context.Enrollments.AddRange(
-                    new Enrollment
-                    {
-                        Student = carson,
-                        Course = chemistry,
-                        Grade = Grade.A
-                    },
-                    new Enrollment
-                    {
-                        Student = carson,
-                        Course = microeconomics,
-                        Grade = Grade.C
-                    },
-                    new Enrollment
-                    {
-                        Student = alonso,
-                        Course = calculus,
-                        Grade = Grade.B
-                    },
-                    new Enrollment
-                    {
-                        Student = anand,
-                        Course = chemistry,
-                    },
-                    new Enrollment
-                    {
-                        Student = anand,
-                        Course = microeconomics,
-                        Grade = Grade.B
-                    },
-                    new Enrollment
-                    {
-                        Student = barzdukas,
-                        Course = chemistry,
-                        Grade = Grade.C
-                    }
-                );
-            }
+                Id = 4022,
+                Title = "Microeconomics",
+                Credits = 3
+            };
+            Course macroeconmics = new Course
+            {
+                Id = 4041,
+                Title = "Macroeconomics",
+                Credits = 3
+            };
+            Course calculus = new Course
+            {
+                Id = 1045,
+                Title = "Calculus",
+                Credits = 4
+            };
+            context.Courses.AddRange(
+                chemistry,
+                microeconomics,
+                macroeconmics,
+                calculus
+            );
+
+            // Add enrollments
+            context.Enrollments.AddRange(
+                new Enrollment
+                {
+                    Student = carson,
+                    Course = chemistry,
+                    Grade = Grade.A
+                },
+                new Enrollment
+                {
+                    Student = carson,
+                    Course = microeconomics,
+                    Grade = Grade.C
+                },
+                new Enrollment
+                {
+                    Student = alonso,
+                    Course = calculus,
+                    Grade = Grade.B
+                },
+                new Enrollment
+                {
+                    Student = anand,
+                    Course = chemistry,
+                },
+                new Enrollment
+                {
+                    Student = anand,
+                    Course = microeconomics,
+                    Grade = Grade.B
+                },
+                new Enrollment
+                {
+                    Student = barzdukas,
+                    Course = chemistry,
+                    Grade = Grade.C
+                }
+            );
+
             // Commit changes into DB
             context.SaveChanges();
         }

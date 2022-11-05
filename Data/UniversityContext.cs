@@ -1,20 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using EFUniversity.Models;
 
-namespace EFUniversity.Data;
 public class UniversityContext : DbContext
 {
-    public DbSet<Enrollment> Enrollments { get; set; } = null!;
     public DbSet<Student> Students { get; set; } = null!;
     public DbSet<Course> Courses { get; set; } = null!;
+    public DbSet<Enrollment> Enrollments { get; set; } = null!;
 
     public string DbPath { get; private set; }
 
     public UniversityContext()
     {
         // Path to SQLite database file
-        DbPath = "EFUnivesity.db";
+        DbPath = "EFUniversity.db";
     }
 
     // The following configures EF to create a SQLite database file locally
@@ -23,6 +21,7 @@ public class UniversityContext : DbContext
         // Use SQLite as database
         options.UseSqlite($"Data Source={DbPath}");
         // Optional: log SQL queries to console
-        options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
+        //options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
     }
+
 }

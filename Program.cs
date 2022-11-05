@@ -1,79 +1,76 @@
-﻿using EFUniversity.Data;
-using EFUniversity.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
-// Seed data into DB
-SeedData.Init();
-
-
-//Requêtage de données
 using (var context = new UniversityContext())
 {
-    Console.WriteLine("---Liste de tous les cours, triés par ordre alphabétique---");
-    var cours = context.Courses
-        .OrderBy(c => c.Title)
-        .ToList();
-    foreach (Course c in cours)
-    {
+    SeedData.Init();
+
+    Console.WriteLine("----- Courses sorted alphabetically -----");
+    var courses = context.Courses.OrderBy(c => c.Title).ToList();
+    foreach (Course c in courses)
         Console.WriteLine(c);
-    }
 
-    Console.WriteLine("---Liste de tous les étudiants, triés par identifiant décroissant---");
+    Console.WriteLine("----- Students sorted by decreasing id -----");
+    var students = context.Students.OrderByDescending(s => s.Id).ToList();
+    foreach (Student s in students)
+        Console.WriteLine(s);
 
-    var eleve = context.Students
-            .OrderBy(e => e.Id)
-            .ToList();
-    for (int i = cours.Count - 1; i >= 0; i--)
-    {
-        Console.WriteLine(eleve[i]);
-    }
+    Console.WriteLine("----- Details about Alexander Carson -----");
+    var carson = context.Students
+        .Where(s => s.FirstName == "Alexander" && s.LastName == "Carson")
+        .Include(s => s.Enrollments) // Needed to navigate enrollments
+        .Single();
+    Console.WriteLine(carson);
+    foreach (Enrollment e in carson.Enrollments)
+        Console.WriteLine(e);
 
-    Console.WriteLine("---Détails sur l’étudiant A. Carson.---");
+    Console.WriteLine("----- Grades obtained by A. Anand -----");
+    var anandGradesQuery = from s in context.Students
+                           from e in s.Enrollments
+                           where s.FirstName == "Arturo" && s.LastName == "Anand"
+                           select e.Grade;
+    foreach (Grade? grade in anandGradesQuery)
+        Console.WriteLine($"Grade: {grade}");
 
-    Student eleve1 = context.Students
-            .Where(e => e.LastName == "Carson"
-                     && e.FirstName == "Alexander").Single();
-    Console.WriteLine(eleve1);
+    Console.WriteLine("----- Students enrolled in Chemistry course -----");
+    var chemStudentsQuery = from s in context.Students
+                            from e in s.Enrollments.Where(e => e.Course.Title == "Chemistry")
+                            select s;
+    var chemStudents = chemStudentsQuery.ToList();
+    foreach (Student s in chemStudents)
+        Console.WriteLine(s);
 
-    /*
-    Student eleve1 = context.Students
-            .Single(e => e.LastName == "Carson"
-                     && e.FirstName == "Alexander")
-    Console.WriteLine(eleve1);
-    */
-
-
-    Console.WriteLine("---(Bonus) Notes obtenues par A. Anand dans l’ensemble de ses cours---");
-    Console.WriteLine("---(Bonus) Liste des étudiants inscrits au cours Chemistry---");
-}
-
-//Mise à jour de données
-using (var context = new UniversityContext())
-{
-    var eleve = context.Students
-        .Where(e => e.LastName == "Alonso").Single();
-    var cours = context.Courses
-        .Where(c => c.Title == "Chemistry").Single();
-
-    var inscription = context.Enrollments;
-    inscription.Add(new Enrollment
-    {
-        Student = eleve,
-        Course = cours,
-        Grade = null,
-    });
+    Console.WriteLine("----- Enrolling A. Alonso in Chemistry -----");
+    var alonso = context.Students
+        .Where(s => s.FirstName == "Arturo" && s.LastName == "Anand")
+        .Single();
+    var chemistry = context.Courses
+        .Where(c => c.Title == "Chemistry")
+        .Single();
+    alonso.Enrollments.Add(new Enrollment { Student = alonso, Course = chemistry, Grade = Grade.D });
     context.SaveChanges();
-}
 
-//Supprssion de données
-using (var context = new UniversityContext())
-{
-    var supressionEleve = context.Students
-        .Where(e => e.LastName == "Barzdukas").Single();
-    context.Remove(supressionEleve);
+    Console.WriteLine("----- Setting A. Anand's grade in Chemistry -----");
+    var anandChemEnrollQuery = from s in context.Students
+                               from e in s.Enrollments.Where(e => e.Course.Title == "Chemistry")
+                               where s.FirstName == "Arturo" && s.LastName == "Anand"
+                               select e;
+    Enrollment anandChemEnroll = anandChemEnrollQuery.First();
+    anandChemEnroll.Grade = Grade.A;
+    context.SaveChanges();
 
-    var supressionEnrollment = context.Enrollments
-        .Where(e => e.StudentId == supressionEleve.Id).Single();
-    context.Remove(supressionEnrollment);
+    Console.WriteLine("----- Deleting student G. Barzdukas -----");
+    var barzdukas = context.Students
+        .Where(s => s.FirstName == "Gytis" && s.LastName == "Barzdukas")
+        .Single();
+    context.Students.Remove(barzdukas);
+    context.SaveChanges();
 
+    Console.WriteLine("----- Deleting A. Carson's enrollment in Chemistry -----");
+    var carsonChemEnrollQuery = from e in context.Enrollments
+        .Where(e => e.Student.FirstName == "Alexander" && e.Student.LastName == "Carson")
+        .Where(e => e.Course.Title == "Chemistry")
+                                select e;
+    Enrollment carsonChemEnroll = carsonChemEnrollQuery.First();
+    context.Enrollments.Remove(carsonChemEnroll);
     context.SaveChanges();
 }
